@@ -1,6 +1,7 @@
-from crypt import methods
 from flask import *
 app= Flask(__name__)
+host = '0.0.0.0'
+port = '8080'
 @app.route('/')
 def home():
     return redirect('/login')
@@ -10,9 +11,9 @@ def login_confirm():
     id = request.form['id']
     pw = request.form['id']
     if id == 'admin' and pw == 'admin':
-        return redirect(url_for('index'))
+        return redirect('/index')
     else:
-        return redirect(url_for('login'))
+        return redirect('/login')
 
 @app.route('/login')
 def login():
@@ -22,4 +23,4 @@ def login():
 def index():
     return render_template('/index.html')
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host=host, port=port)
