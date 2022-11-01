@@ -15,10 +15,13 @@ def root():
 
 @app.route('/home')
 def home():
+    query = "SELECT * FROM user"
+    cursor.execute(query)
+    result = cursor.fetchall()
     if 'id' in session:
-        return render_template('/home.html',id=session['id'])
+        return render_template('/home.html',id=session['id'],reg=result)
     else:
-        return render_template('/home.html',id='XXX')
+        return render_template('/home.html',id='X',reg=result)
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -37,19 +40,57 @@ def register():
 def login():
     if request.method == 'POST':
         id = request.form['id']
-        session['id']=request.form['id']
-        return redirect('/home')
-
+        pw = request.form['pw']
+        query = "SELECT id, pw FROM user WHERE id=%s and pw=%s"
+        data = (id,pw)
+        cursor.execute(query,data)
+        result = cursor.fetchall()
+        if len(result)==0:
+            return redirect('/home')
+        else:
+            session['id']=request.form['id']
+            return redirect('/home')
     else:
         return render_template('/login.html')
 
-@app.route('/pwchange')
+@app.route('/pwchange',methods=['GET','POST'])
 def pwchange():
-    return render_template('/pwchange.html')
+    if request.method=='POST':
+        id = request.form['id']
+        bpw = request.form['bpw']
+        apw = request.form['apw']
+        query = "SELECT id FROM user WHERE id=%s and pw=%s"
+        data = (id,bpw)
+        cursor.execute(query,data)
+        result = cursor.fetchall()
+        if len(result)==0:
+            return render_template('pwchange.html')
+        else:
+            query = "UPDATE user SET id=%s, pw=%s"
+            data = (id,apw)
+            cursor.execute(query,data)
+            return redirect('/home')
+    else:
+        return render_template('/pwchange.html')
 
-@app.route('/delete')
+@app.route('/delete',methods=['GET','POST'])
 def delete():
-    return render_template('/delete.html')
+    if request.method=='POST':
+        id = request.form['id']
+        pw = request.form['pw']
+        query = "SELECT id FROM user WHERE id=%s and pw=%s"
+        data = (id,pw)
+        cursor.execute(query,data)
+        result = cursor.fetchall()
+        if len(result)==0:
+            return render_template('/delete.html', alert=1)
+        else:
+            query = "DELETE FROM user where id=%s and pw=%s"
+            data = (id,pw)
+            cursor.execute(query,data)
+            return redirect('/home')
+    else:
+        return render_template('/delete.html')
 
     
 @app.route('/login_confirm', methods=['POST'])
@@ -63,3 +104,4 @@ def login_confirm():
 
 if __name__ == '__main__':
     app.run(debug=True, host=host, port=port)
+    session.clear()
