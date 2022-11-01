@@ -92,16 +92,6 @@ def delete():
     else:
         return render_template('/delete.html')
 
-    
-@app.route('/login_confirm', methods=['POST'])
-def login_confirm():
-    id = request.form['id']
-    pw = request.form['pw']
-    query = "SELECT id, pw FROM user WHERE id=%s and pw=%s"
-    data = (id,pw)
-    cursor.execute(query,data)
-    return redirect('/login')
-
 if __name__ == '__main__':
     app.run(debug=True, host=host, port=port)
     session.clear()
