@@ -5,7 +5,8 @@ host = '0.0.0.0'
 port = '8080'
 
 db = pymysql.Connect(host='localhost',user='root',password='eodus6450', database='web_db')
-corsor = db.cursor()
+cursor = db.cursor()
+
 @app.route('/')
 def root():
     return redirect('/home')
@@ -20,7 +21,10 @@ def register():
 
 @app.route('/login')
 def login():
-    return render_template('/login.html')
+    query = "SELECT * FROM user"
+    cursor.execute(query)
+    result = cursor.fetchall()
+    return render_template('/login.html',results=result)
 
 @app.route('/pwchange')
 def pwchange():
@@ -36,7 +40,10 @@ def delete():
 def register_confirm():
     id = request.form['id']
     pw = request.form['pw']
-    
+    query = "INSERT INTO user (id, pw) VALUES (%s, %s)"
+    data = (id,pw)
+    cursor.execute(query,data)
+    return redirect('/home')
     
 @app.route('/login_confirm', methods=['POST'])
 def login_confirm():
@@ -49,6 +56,8 @@ def login_confirm():
 
 @app.route('/pwchange_confirm', methods=['POST'])
 def pwchange_confirm():
+    id = request.form['id']
+    pw = request.form['pw']
     return render_template('/pwchange.html')
 @app.route('/delete_confirm', methods=['POST'])
 def delete_confirm():
