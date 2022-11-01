@@ -1,6 +1,8 @@
 from flask import *
 import pymysql
+
 app= Flask(__name__)
+app.secret_key=b'230&6^240)'
 host = '0.0.0.0'
 port = '8080'
 
@@ -13,18 +15,33 @@ def root():
 
 @app.route('/home')
 def home():
-    return render_template('/home.html')
+    if 'id' in session:
+        return render_template('/home.html',id=session['id'])
+    else:
+        return render_template('/home.html',id='XXX')
 
-@app.route('/register')
+@app.route('/register', methods=['GET','POST'])
 def register():
-    return render_template('/register.html')
+    if request.method == 'POST':
+        id = request.form['id']
+        pw = request.form['pw']
+        query = "INSERT INTO user (id, pw) VALUES (%s, %s)"
+        data = (id,pw)
+        cursor.execute(query,data)
+        return redirect('/home')
 
-@app.route('/login')
+    else:
+        return render_template('/register.html')
+
+@app.route('/login', methods=['GET','POST'])
 def login():
-    query = "SELECT * FROM user"
-    cursor.execute(query)
-    result = cursor.fetchall()
-    return render_template('/login.html',results=result)
+    if request.method == 'POST':
+        id = request.form['id']
+        session['id']=request.form['id']
+        return redirect('/home')
+
+    else:
+        return render_template('/login.html')
 
 @app.route('/pwchange')
 def pwchange():
@@ -34,33 +51,15 @@ def pwchange():
 def delete():
     return render_template('/delete.html')
 
-
-
-@app.route('/register_confirm', methods=['POST'])
-def register_confirm():
-    id = request.form['id']
-    pw = request.form['pw']
-    query = "INSERT INTO user (id, pw) VALUES (%s, %s)"
-    data = (id,pw)
-    cursor.execute(query,data)
-    return redirect('/home')
     
 @app.route('/login_confirm', methods=['POST'])
 def login_confirm():
     id = request.form['id']
     pw = request.form['pw']
-    if id == 'admin' and pw == 'admin':
-        return redirect('/index')
-    else:
-        return redirect('/login')
+    query = "SELECT id, pw FROM user WHERE id=%s and pw=%s"
+    data = (id,pw)
+    cursor.execute(query,data)
+    return redirect('/login')
 
-@app.route('/pwchange_confirm', methods=['POST'])
-def pwchange_confirm():
-    id = request.form['id']
-    pw = request.form['pw']
-    return render_template('/pwchange.html')
-@app.route('/delete_confirm', methods=['POST'])
-def delete_confirm():
-    return render_template('/delete.html')
 if __name__ == '__main__':
     app.run(debug=True, host=host, port=port)
