@@ -88,9 +88,14 @@ def delete():
             query = "DELETE FROM user where id=%s and pw=%s"
             data = (id,pw)
             cursor.execute(query,data)
-            return redirect('/home')
+            return redirect('/logout')
     else:
         return render_template('/delete.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('id',None)
+    return redirect('/home')
 
 if __name__ == '__main__':
     app.run(debug=True, host=host, port=port)

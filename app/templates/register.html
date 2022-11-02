@@ -7,9 +7,20 @@
     <title>Saneo's page</title>
 </head>
 <body>
+    <script>
+        function noSpaceForm(obj) { // 공백사용못하게
+            var str_space = /\s/;  // 공백체크
+            if(str_space.exec(obj.value)) { //공백 체크
+                alert("remove blank...");
+                obj.focus();
+                obj.value = obj.value.replace(' ',''); // 공백제거
+                return false;
+            }
+        }
+    </script>
     <form method="post" action="/register">
         <h1>Register page</h1>
-        I D : <input type="text" name="id"><br>
+        I D : <input type="text" name="id" onkeyup="noSpaceForm(this);" onchange="noSpaceForm(this);"><br>
         P W : <input type="password" name="pw"><br>
         <input type="submit" value="register">
     </form>
