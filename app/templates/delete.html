@@ -7,9 +7,14 @@
     <title>Saneo's page</title>
 </head>
 <body>
-    <form method="post" action="/delete_confirm">
+    {% if alert == 1 %}
+        <script>alert('wrong password')</script>
+    {% endif %}
+    <form method="post" action="/delete">
         <h1>Delete page</h1>
-        <input 
+        id : <input type="id" name="id"><br>
+        pw : <input type="password" name="pw"><br>
+        <input type="submit" value="check">
     </form>
 </body>
 </html>
