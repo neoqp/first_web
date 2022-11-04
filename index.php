@@ -1,31 +1,3 @@
-<?php
-	include "dbconnect.php";
-	$admin_check = "SELECT id FROM member WHERE id = 'admin' ";
-    $result = @mysqli_fetch_array(mysqli_query($db,$admin_check));
-    if(!$result['id'])
-    {
-    	$sql = "INSERT INTO member VALUES('admin','dnjs6033^^','admin','1')";
-    	$db->query($sql);
-    }
-    include "check.php";
-    if($chk == True)
-    {
-    	$user_check = "SELECT id FROM member WHERE id = '{$_SESSION["username"]}' ";
-    	$res = @mysqli_fetch_array(mysqli_query($db,$user_check));
-    	if($res['id'])
-    	{
-    		if($_SESSION['username']=='admin')
-    		{
-    			header("Location: /admin.php");
-    		}
-    		else
-    		{
-    			header("Location: /user.php");
-    		}
-    	}
-    }
-?>
-
 <!DOCTYPE html>
 <html>
 <head>
