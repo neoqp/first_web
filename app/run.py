@@ -30,8 +30,11 @@ def register():
         pw = request.form['pw']
         query = "INSERT INTO user (id, pw) VALUES (%s, %s)"
         data = (id,pw)
-        cursor.execute(query,data)
-        return redirect('/home')
+        try:
+            cursor.execute(query,data)
+            return redirect('/home')
+        except:
+            return redirect('/')
 
     else:
         return render_template('/register.html')
@@ -43,7 +46,10 @@ def login():
         pw = request.form['pw']
         query = "SELECT id, pw FROM user WHERE id=%s and pw=%s"
         data = (id,pw)
-        cursor.execute(query,data)
+        try:
+            cursor.execute(query,data)
+        except:
+            return redirect('/')
         result = cursor.fetchall()
         if len(result)==0:
             return redirect('/home')
@@ -61,15 +67,21 @@ def pwchange():
         apw = request.form['apw']
         query = "SELECT id FROM user WHERE id=%s and pw=%s"
         data = (id,bpw)
-        cursor.execute(query,data)
+        try:
+            cursor.execute(query,data)
+        except:
+            return redirect('/')
         result = cursor.fetchall()
         if len(result)==0:
             return render_template('pwchange.html')
         else:
             query = "UPDATE user SET id=%s, pw=%s"
             data = (id,apw)
-            cursor.execute(query,data)
-            return redirect('/home')
+            try:
+                cursor.execute(query,data)
+                return redirect('/home')
+            except:
+                return redirect('/')
     else:
         return render_template('/pwchange.html')
 
@@ -80,15 +92,21 @@ def delete():
         pw = request.form['pw']
         query = "SELECT id FROM user WHERE id=%s and pw=%s"
         data = (id,pw)
-        cursor.execute(query,data)
+        try:
+            cursor.execute(query,data)
+        except:
+            return redirect('/')
         result = cursor.fetchall()
         if len(result)==0:
             return render_template('/delete.html', alert=1)
         else:
             query = "DELETE FROM user where id=%s and pw=%s"
             data = (id,pw)
-            cursor.execute(query,data)
-            return redirect('/logout')
+            try:
+                cursor.execute(query,data)
+                return redirect('/logout')
+            except:
+                return redirect('/')
     else:
         return render_template('/delete.html')
 
